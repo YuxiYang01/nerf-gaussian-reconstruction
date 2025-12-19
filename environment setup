@@ -1,0 +1,7 @@
+#!/bin/bash
+# Environment setup for NeRFStudio-based reconstruction
+python -m pip install --upgrade pip
+# Install nerfstudio
+pip install nerfstudio
+# (Optional) COLMAP if running locally
+# sudo apt install colmap
