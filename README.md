@@ -12,8 +12,9 @@ Pipeline:
 5. Evaluation & analysis
 ## Results
 
-### Nerfacto Spiral Render (30K iterations)
 
-<video src="https://github.com/YuxiYang01/nerf-gaussian-reconstruction/raw/main/results/nerfacto_spiral.mp4" controls width="640"></video>
+https://github.com/user-attachments/assets/055dae44-da2d-4d62-bde0-ed49fac2ee98
+
+
 
 Author: Yuxi Yang
