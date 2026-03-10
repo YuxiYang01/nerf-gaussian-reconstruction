@@ -1,7 +1,48 @@
-#!/bin/bash
-# Environment setup for NeRFStudio-based reconstruction
-python -m pip install --upgrade pip
-# Install nerfstudio
-pip install nerfstudio
-# (Optional) COLMAP if running locally
-# sudo apt install colmap
+# 1a) PyTorch + nerfstudio
+!pip install -q torch==2.2.2+cu118 torchvision==0.17.2+cu118 torchaudio==2.2.2+cu118 \
+    --extra-index-url https://download.pytorch.org/whl/cu118
+!pip install -q nerfstudio
+import torch
+print(f"PyTorch {torch.__version__}  CUDA: {torch.cuda.is_available()}")
+!which ns-train
+!which ns-render
+# 1b) tiny-cuda-nn (~5-10 min compile)
+!pip install -q ninja
+!pip install git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch
+import tinycudann
+print("tiny-cuda-nn OK")
+# 1c) Patch torch.compile for Python 3.12+
+misc_path = f"{site.getsitepackages()[0]}/nerfstudio/utils/misc.py"
+with open(misc_path, "r") as f:
+    src = f.read()
+
+if 'return torch.compile(*args, **kwargs)' in src and 'sys.version_info' not in src:
+    patch = (
+        'import sys\n'
+        '    if sys.version_info >= (3, 12):\n'
+        '        if len(args) == 1 and callable(args[0]):\n'
+        '            return args[0]\n'
+        '        return lambda fn: fn\n'
+        '    return torch.compile(*args, **kwargs)'
+    )
+    src = src.replace('return torch.compile(*args, **kwargs)', patch)
+    with open(misc_path, "w") as f:
+        f.write(src)
+    print("Patched misc.py")
+else:
+    print("Already patched")
+# 1d) Patch torch.load for old checkpoints
+eval_path = f"{site.getsitepackages()[0]}/nerfstudio/utils/eval_utils.py"
+with open(eval_path, "r") as f:
+    src = f.read()
+
+old = 'torch.load(load_path, map_location="cpu")'
+new = 'torch.load(load_path, map_location="cpu", weights_only=False)'
+
+if old in src and new not in src:
+    src = src.replace(old, new)
+    with open(eval_path, "w") as f:
+        f.write(src)
+    print("Patched eval_utils.py")
+else:
+    print("Already patched")
