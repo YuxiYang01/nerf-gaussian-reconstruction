@@ -14,5 +14,6 @@ Pipeline:
 
 ### Nerfacto Spiral Render (30K iterations)
 
-https://github.com/YuxiYang01/nerf-gaussian-reconstruction/raw/main/results/nerfacto_spiral.mp4
+<video src="https://github.com/YuxiYang01/nerf-gaussian-reconstruction/raw/main/results/nerfacto_spiral.mp4" controls width="640"></video>
+
 Author: Yuxi Yang
